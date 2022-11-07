@@ -11,6 +11,8 @@ https://streamable.com/m7vqz1
 
 **Want to add**:
 - go pick up the item somewhere instead of instantly getting it
+- buy multiple items
+- checkout cart for cash or bank
 
 **Extras**:
 - Event to call if you want to add it to a ped or something like that
