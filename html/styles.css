@@ -1,0 +1,37 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans&display=swap");
+
+
+#container {
+    font-size: 20px;
+    padding: 25px;
+    color: white;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #232833;
+    height: 720px;
+    width: 1280px;
+    border-radius: 7px;
+    border: 2px solid #495266;
+    overflow-y: scroll;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+    animation: laptop_up forwards cubic-bezier(0.4, 0, 0.01, 1.17) 1s;
+}
+
+#container::-webkit-scrollbar {
+    width: 0px;
+    display: none;
+}
+
+
+
+@keyframes laptop_up {
+    from {
+      bottom: -150%;
+    }
+    to {
+      bottom: -45%;
+    }
+  }
