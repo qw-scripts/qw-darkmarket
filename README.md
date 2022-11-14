@@ -1,8 +1,10 @@
 # qw-darkmarket
+
 Black Market Script for QBCore (NUI Based)
 
 **Preview**:
-https://streamable.com/m7vqz1
+
+https://streamable.com/7ia38x
 
 **Setup**:
 
@@ -17,6 +19,7 @@ https://streamable.com/m7vqz1
 - [ ] checkout cart for cash or bank
 
 **Extras**:
+
 - Event to call if you want to add it to a ped or something like that
 
 ```lua
