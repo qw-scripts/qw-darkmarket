@@ -2,7 +2,7 @@ fx_version 'cerulean'
 game 'gta5'
 
 description 'qw-darkmarket'
-version '0.1.0'
+version '0.2.0'
 author 'qwadebot'
 
 server_script {

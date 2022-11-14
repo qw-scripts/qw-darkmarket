@@ -1,5 +1,7 @@
 local QBCore = exports['qb-core']:GetCoreObject()
 local display = false
+pickupZoneName = nil
+pickupBlip = nil
 
 -- For Animation
 local tabletDict = "amb@code_human_in_bus_passenger_idles@female@tablet@base"
@@ -59,10 +61,80 @@ RegisterNUICallback('items', function(_, cb)
 
 end)
 
+
+
+function createPickupBlipRoute(coords) 
+
+    if pickupBlip ~= nil then
+        RemoveBlip(pickupBlip)
+    end
+
+    pickupBlip = AddBlipForCoord(coords)
+    SetBlipRoute(pickupBlip, true)
+    SetBlipRouteColour(pickupBlip, 43)
+    SetBlipSprite(pickupBlip, 514)
+    SetBlipAsShortRange(pickupBlip, true)
+    SetBlipScale(pickupBlip, 0.8)
+
+    BeginTextCommandSetBlipName('STRING')
+    AddTextComponentString('Pickup Location')
+    EndTextCommandSetBlipName(pickupBlip)
+end
+
+function StartPickup(coords) 
+    SetTimeout(Config.EmailSendTime, function()
+        TriggerServerEvent('qb-phone:server:sendNewMail', {
+            sender = 'Anonymous Sender',
+            subject = 'Your Item is Ready for Pickup',
+            message = 'I have added a waypoint to your GPS, please make your way over there to retrieve your item.',
+            button = {}
+        })
+        Wait(1000)
+        createPickupBlipRoute(coords)
+    end)
+end
+
+function createPickupZone(item) 
+    local pickupZoneInfo = Config.PickupLocations[math.random(1, #Config.PickupLocations)]
+    pickupZoneName = pickupZoneInfo.name
+    QBCore.Functions.Notify('Purchase Successful, you will recieve an email shortly with your pickup location!', 'success', 7500)
+    StartPickup(pickupZoneInfo.coords)
+
+    exports['qb-target']:AddBoxZone(pickupZoneInfo.name, pickupZoneInfo.coords, pickupZoneInfo.length, pickupZoneInfo.width, {
+        name = pickupZoneInfo.name,
+        debugPoly = Config.Debug,
+        heading = pickupZoneInfo.heading,
+        minZ = pickupZoneInfo.minZ,
+        maxZ = pickupZoneInfo.maxZ,
+    }, {
+        options = {
+            {
+                type = "client",
+                action = function()
+                    TriggerEvent("qw-darkmarket:client:pickupItem", item)
+                end,
+                icon = "fas fa-hand",
+                label = "Pickup Items",
+            },
+        },
+        distance = 2.0
+    })
+
+end
+
+RegisterNetEvent('qw-darkmarket:client:pickupItem', function(item) 
+    TriggerServerEvent('qw-darkmarket:server:pickupItem', item)
+    exports['qb-target']:RemoveZone(pickupZoneName)
+    RemoveBlip(pickupBlip)
+    pickupZoneName = nil
+    pickupBlip = nil
+end)
+
 RegisterNUICallback('buyitems', function(data) 
 
     SetDisplay(false)
-    TriggerServerEvent('qw-darkmarket:server:buyItem', data.item, tonumber(data.price))
+    TriggerServerEvent('qw-darkmarket:server:buyItem', tonumber(data.price))
+    createPickupZone(data.item)
 
 end)
 
