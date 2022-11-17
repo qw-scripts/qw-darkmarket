@@ -25,3 +25,9 @@ https://streamable.com/7ia38x
 ```lua
 qw-darkmarket:client:openMarket
 ```
+
+- Exported Funciton that you could also call if you need that
+
+```lua
+exports['qw-darkmarket']:openMarket()
+```

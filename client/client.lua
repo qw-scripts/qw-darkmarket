@@ -173,6 +173,12 @@ RegisterNetEvent('qw-darkmarket:client:openMarket', function()
     SetDisplay(not display)
 end)
 
+function openMarket()
+    TriggerEvent('qw-darkmarket:client:openMarket')
+end
+
+exports('openMarket', openMarket)
+
 CreateThread(function()
     while display do
         Citizen.Wait(0)
