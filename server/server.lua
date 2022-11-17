@@ -1,7 +1,7 @@
 local QBCore = exports['qb-core']:GetCoreObject()
 
 QBCore.Functions.CreateUseableItem(Config.ItemName, function(source, item)
-    TriggerClientEvent('qw-darkmarket:client:openTablet', source)
+    TriggerClientEvent('qw-darkmarket:client:openMarket', source)
 end)
 
 QBCore.Functions.CreateCallback('qw-darkmarket:server:buyItem', function(source, cb, price) 

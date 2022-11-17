@@ -23,5 +23,5 @@ https://streamable.com/7ia38x
 - Event to call if you want to add it to a ped or something like that
 
 ```lua
-qw-darkmarket:client:openTablet
+qw-darkmarket:client:openMarket
 ```

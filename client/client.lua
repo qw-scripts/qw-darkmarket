@@ -167,7 +167,7 @@ function SetDisplay(bool)
     doAnimation()
 end
 
-RegisterNetEvent('qw-darkmarket:client:openTablet', function()
+RegisterNetEvent('qw-darkmarket:client:openMarket', function()
     local ped = PlayerPedId()
 
     SetDisplay(not display)
