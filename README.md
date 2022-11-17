@@ -23,7 +23,7 @@ https://streamable.com/7ia38x
 - Event to call if you want to add it to a ped or something like that
 
 ```lua
-qw-darkmarket:client:openMarket
+TriggerEvent('qw-darkmarket:client:openMarket')
 ```
 
 - Exported Funciton that you could also call if you need that
