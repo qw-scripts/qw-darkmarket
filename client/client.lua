@@ -11,7 +11,6 @@ local tabletBone = 60309
 local tabletOffset = vector3(0.03, 0.002, -0.0)
 local tabletRot = vector3(10.0, 160.0, 0.0)
 
-
 function doAnimation()
     if not display then return end
     -- Animation
@@ -27,14 +26,18 @@ function doAnimation()
 
     local tabletBoneIndex = GetPedBoneIndex(plyPed, tabletBone)
 
-    AttachEntityToEntity(tabletObj, plyPed, tabletBoneIndex, tabletOffset.x, tabletOffset.y, tabletOffset.z, tabletRot.x, tabletRot.y, tabletRot.z, true, false, false, false, 2, true)
+    AttachEntityToEntity(tabletObj, plyPed, tabletBoneIndex, tabletOffset.x,
+                         tabletOffset.y, tabletOffset.z, tabletRot.x,
+                         tabletRot.y, tabletRot.z, true, false, false, false, 2,
+                         true)
     SetModelAsNoLongerNeeded(tabletProp)
 
     CreateThread(function()
         while display do
             Wait(0)
             if not IsEntityPlayingAnim(plyPed, tabletDict, tabletAnim, 3) then
-                TaskPlayAnim(plyPed, tabletDict, tabletAnim, 3.0, 3.0, -1, 49, 0, 0, 0, 0)
+                TaskPlayAnim(plyPed, tabletDict, tabletAnim, 3.0, 3.0, -1, 49,
+                             0, 0, 0, 0)
             end
         end
         ClearPedSecondaryTask(plyPed)
@@ -48,11 +51,12 @@ RegisterNUICallback('items', function(_, cb)
 
     local itemList = {}
     for k, v in pairs(Config.Items) do
-        itemList[#itemList+1] = {
+        itemList[#itemList + 1] = {
             name = v.name,
             description = v.description,
             price = v.price,
-            image = Config.Inventory .. "/html/images/" .. QBCore.Shared.Items[k].image,
+            image = Config.Inventory .. "/html/images/" ..
+                QBCore.Shared.Items[k].image,
             item = k
         }
     end
@@ -61,13 +65,9 @@ RegisterNUICallback('items', function(_, cb)
 
 end)
 
+function createPickupBlipRoute(coords)
 
-
-function createPickupBlipRoute(coords) 
-
-    if pickupBlip ~= nil then
-        RemoveBlip(pickupBlip)
-    end
+    if pickupBlip ~= nil then RemoveBlip(pickupBlip) end
 
     pickupBlip = AddBlipForCoord(coords)
     SetBlipRoute(pickupBlip, true)
@@ -81,7 +81,7 @@ function createPickupBlipRoute(coords)
     EndTextCommandSetBlipName(pickupBlip)
 end
 
-function StartPickup(coords) 
+function StartPickup(coords)
     SetTimeout(Config.EmailSendTime, function()
         TriggerServerEvent('qb-phone:server:sendNewMail', {
             sender = 'Anonymous Sender',
@@ -94,18 +94,23 @@ function StartPickup(coords)
     end)
 end
 
-function createPickupZone(item) 
-    local pickupZoneInfo = Config.PickupLocations[math.random(1, #Config.PickupLocations)]
+function createPickupZone(item)
+    local pickupZoneInfo = Config.PickupLocations[math.random(1,
+                                                              #Config.PickupLocations)]
     pickupZoneName = pickupZoneInfo.name
-    QBCore.Functions.Notify('Purchase Successful, you will recieve an email shortly with your pickup location!', 'success', 7500)
+    QBCore.Functions.Notify(
+        'Purchase Successful, you will recieve an email shortly with your pickup location!',
+        'success', 7500)
     StartPickup(pickupZoneInfo.coords)
 
-    exports['qb-target']:AddBoxZone(pickupZoneInfo.name, pickupZoneInfo.coords, pickupZoneInfo.length, pickupZoneInfo.width, {
+    exports['qb-target']:AddBoxZone(pickupZoneInfo.name, pickupZoneInfo.coords,
+                                    pickupZoneInfo.length, pickupZoneInfo.width,
+                                    {
         name = pickupZoneInfo.name,
         debugPoly = Config.Debug,
         heading = pickupZoneInfo.heading,
         minZ = pickupZoneInfo.minZ,
-        maxZ = pickupZoneInfo.maxZ,
+        maxZ = pickupZoneInfo.maxZ
     }, {
         options = {
             {
@@ -114,15 +119,15 @@ function createPickupZone(item)
                     TriggerEvent("qw-darkmarket:client:pickupItem", item)
                 end,
                 icon = "fas fa-hand",
-                label = "Pickup Items",
-            },
+                label = "Pickup Items"
+            }
         },
         distance = 2.0
     })
 
 end
 
-RegisterNetEvent('qw-darkmarket:client:pickupItem', function(item) 
+RegisterNetEvent('qw-darkmarket:client:pickupItem', function(item)
     TriggerServerEvent('qw-darkmarket:server:pickupItem', item)
     exports['qb-target']:RemoveZone(pickupZoneName)
     RemoveBlip(pickupBlip)
@@ -130,32 +135,35 @@ RegisterNetEvent('qw-darkmarket:client:pickupItem', function(item)
     pickupBlip = nil
 end)
 
-RegisterNUICallback('buyitems', function(data) 
+RegisterNUICallback('buyitems', function(data)
 
     SetDisplay(false)
-    TriggerServerEvent('qw-darkmarket:server:buyItem', tonumber(data.price))
-    createPickupZone(data.item)
+
+    QBCore.Functions.TriggerCallback('qw-darkmarket:server:buyItem', function(hasEnough)
+
+        if hasEnough then
+            createPickupZone(data.item)
+        else
+            QBCore.Functions.Notify(
+                'You do not have enough money to purchase this item!', 'error',
+                7500)
+        end
+
+    end, tonumber(data.price))
 
 end)
 
+RegisterNUICallback("exit", function(data) SetDisplay(false) end)
 
-RegisterNUICallback("exit", function(data) 
-    SetDisplay(false)
-end)
-
-
-RegisterNUICallback('error', function(data) 
+RegisterNUICallback('error', function(data)
     print(data.error)
     SetDisplay(false)
 end)
 
-function SetDisplay(bool) 
+function SetDisplay(bool)
     display = bool
     SetNuiFocus(bool, bool)
-    SendNUIMessage({
-        type = "ui",
-        status = bool,
-    })
+    SendNUIMessage({type = "ui", status = bool})
     doAnimation()
 end
 
@@ -175,8 +183,4 @@ CreateThread(function()
         DisableControlAction(0, 322, display) -- ESC
         DisableControlAction(0, 106, display) -- VehicleMouseControlOverride
     end
-end)
-
-RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
-    setupPeds()
 end)
